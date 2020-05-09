@@ -68,7 +68,7 @@ tuple<string, vector<net::Peer>> load_network_nodes(const fs::path& p)
 } // namespace
 
 Config::Config(const fs::path& config_p, const fs::path& network_p) :
-    _threads_count(std::thread::hardware_concurrency())
+    _http_server_config(http::server::make_config()), _threads_count(std::thread::hardware_concurrency())
 {
     load_config(config_p);
     load_network(network_p);
@@ -141,21 +141,17 @@ void Config::load_config(const fs::path& p)
             server.lookupValue("port", _port);
 
             if (unsigned int num; server.lookupValue("max_conns", num))
-                _http_server_config.max_conns = num;
+                _http_server_config->max_conns = num;
 
-            server.lookupValue("backlog", _http_server_config.backlog);
-
-            if (unsigned num; server.lookupValue("conns_clean_interval_seconds", num))
-                _http_server_config.conns_clean_interval = seconds(num);
+            server.lookupValue("backlog", _http_server_config->backlog);
 
             if (unsigned num; server.lookupValue("keep_alive_timeout_seconds", num))
-                _http_server_config.connection.keep_alive_timeout = seconds(num);
+                _http_server_config->keep_alive_timeout = seconds(num);
 
-            if (unsigned num; server.lookupValue("request_read_timeout_seconds", num))
-                _http_server_config.connection.request_read_timeout = seconds(num);
-
-            if (unsigned num; server.lookupValue("message_max_size", num))
-                _http_server_config.connection.message.body_max_size = num;
+            if (unsigned num; server.lookupValue("message_max_size", num)) {
+                _http_server_config->buffer_size = num;
+                _http_server_config->request_max_size = num;
+            }
         }
 
         if (http.exists("client")) {
@@ -196,14 +192,11 @@ void Config::load_config(const fs::path& p)
     log_info("http server");
     log_info("\tip: {}", _ip.empty() ? "0.0.0.0" : _ip);
     log_info("\tport: {}", _port);
-    log_info("\tmax_conns: {}", _http_server_config.max_conns);
-    log_info("\tbacklog: {}", _http_server_config.backlog);
-    log_info("\tconns_clean_interval_seconds: {}", _http_server_config.conns_clean_interval.count());
+    log_info("\tmax_conns: {}", _http_server_config->max_conns);
+    log_info("\tbacklog: {}", _http_server_config->backlog);
     log_info("\tkeep_alive_timeout_seconds: {}",
-             duration_cast<seconds>(_http_server_config.connection.keep_alive_timeout).count());
-    log_info("\trequest_read_timeout_seconds: {}",
-             duration_cast<seconds>(_http_server_config.connection.request_read_timeout).count());
-    log_info("\tmessage_max_size: {}", _http_server_config.connection.message.body_max_size);
+             duration_cast<seconds>(_http_server_config->keep_alive_timeout).count());
+    log_info("\tmessage_max_size: {}", _http_server_config->request_max_size);
 
     log_info("http client");
     log_info("\tconns_per_ip: {}", _http_client_config.pool.conns_per_ip);
@@ -213,7 +206,7 @@ void Config::load_config(const fs::path& p)
     log_info("\tmessage_max_size: {}", _http_client_config.pool.connection.message.body_max_size);
 }
 
-const http::server::Config& Config::http_server_config() const noexcept
+const intrusive_ptr<http::server::Config>& Config::http_server_config() const noexcept
 {
     return _http_server_config;
 }

@@ -30,7 +30,7 @@ class Config final
 public:
     explicit Config(const fs::path& config, const fs::path& network);
 
-    [[nodiscard]] const http::server::Config& http_server_config() const noexcept;
+    [[nodiscard]] const intrusive_ptr<http::server::Config>& http_server_config() const noexcept;
     [[nodiscard]] const http::client::Config& http_client_config() const noexcept;
 
     [[nodiscard]] const string& ip() const noexcept;
@@ -53,7 +53,7 @@ private:
     void load_config(const fs::path& p);
     void load_network(const fs::path& p);
 
-    http::server::Config _http_server_config;
+    intrusive_ptr<http::server::Config> _http_server_config;
     http::client::Config _http_client_config;
     string _ip;
     unsigned _port = 8080;

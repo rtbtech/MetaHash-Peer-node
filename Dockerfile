@@ -4,7 +4,6 @@ MAINTAINER oleg@romanenko.ro
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get -qq -y update
-
 RUN apt-get -qq -y install --no-install-recommends git cmake libev-dev libgoogle-perftools-dev libfmt-dev make \
                                                    gcc-9 g++-9 libre2-dev libboost-stacktrace-dev autoconf libssl-dev \
                                                    libconfig++-dev autotools-dev automake libltdl-dev libtool libfmt-dev \

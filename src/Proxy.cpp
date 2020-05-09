@@ -183,7 +183,7 @@ void Proxy::worker(unsigned thread_num)
 
     deque<intrusive_ptr<http::client::Request>> out_queue;
 
-    http_server.set_cb_request([&, this](const auto& http_conn, const auto& http_req, const auto& http_resp) {
+    http_server.set_cb([&, this](const auto& http_conn, const auto& http_req, const auto& http_resp) {
         http_resp->code = http::ResponseStatus::OK;
 
         do {
@@ -193,7 +193,7 @@ void Proxy::worker(unsigned thread_num)
                 if (_config.reqs_dump_err())
                     log_crit("Status: Err, Error: Too many requests, Req: {}", http_req->data());
 
-                http_resp->set_connection_close();
+                http_resp->keep_alive = false;
                 http_resp->code = http::ResponseStatus::TOO_MANY_REQUESTS;
                 break;
             }
