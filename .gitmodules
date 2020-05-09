@@ -1,3 +1,0 @@
-[submodule "libs/core"]
-	path = libs/core
-	url = https://github.com/metahashorg/libsniper.git

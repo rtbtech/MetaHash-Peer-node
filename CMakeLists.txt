@@ -10,7 +10,7 @@ endif ()
 
 if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif()
+endif ()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(cpp)
@@ -29,11 +29,16 @@ find_package(fmt REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Config++ REQUIRED)
 find_package(Secp256k1 REQUIRED)
+find_package(TCMalloc REQUIRED)
+find_package(Libev REQUIRED)
+find_package(Libre2 REQUIRED)
 
 include_directories(SYSTEM ${BOOST_INCLUDE_DIRS})
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 include_directories(SYSTEM ${CONFIG++_INCLUDE_DIR})
 include_directories(SYSTEM ${SECP256K1_INCLUDE_DIR})
+include_directories(SYSTEM ${LIBEV_INCLUDE_DIR})
+include_directories(SYSTEM ${LIBRE2_INCLUDE_DIR})
 
 set(libsniper "std" "log" "cache" "xxhash" "net" "strings" "pico" "file" "event" "http" "crypto" "mh")
 

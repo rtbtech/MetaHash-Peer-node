@@ -7,10 +7,12 @@ message("GIT Revision=${GIT_SHA1}")
 
 set(PROJECT_LIBS
     ${CMAKE_THREAD_LIBS_INIT}
+    ${SECP256K1_LIBRARY} gmp.a
+    ${LIBEV_LIBRARY}
     ${BOOST_LIBRARIES}
     ${CONFIG++_LIBRARY}
+    dl ${LIBRE2_LIBRARY}
     ssl.a crypto.a dl
-    ${SECP256K1_LIBRARY}
     backtrace dl
     fmt::fmt
     stdc++fs.a
